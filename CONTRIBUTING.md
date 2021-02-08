@@ -49,7 +49,9 @@ While the prerequisites above must be satisfied prior to having your pull reques
 ### Reporting Bugs
 ### Suggesting Enhancements / New features
 
-Before creating enhancement suggestions, please check the current issue list as you might find out that you don't need to create one. When you are creating an enhancement/new feature suggestion, please include as many details as possible. Fill in the issue, including the steps that you imagine you would take if the feature you're requesting existed.
+Before creating enhancement suggestions, please check the current issue list or discussion boards as you might find out that you don't need to create one. When you are creating an enhancement/new feature suggestion, please include as many details as possible.
+
+If nothing there you can start getting feedback or polish the ideea using the Discussion boards.
 
 #### How Do I Submit A (Good) Enhancement / New feature Suggestion?
 
