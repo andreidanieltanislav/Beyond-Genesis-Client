@@ -31,7 +31,7 @@ Please follow these steps to have your contribution considered by the maintainer
 1. Clearly identify the the issue that you want to contribute on. To contribute an enhancement that isn't covered by one of the existing issues, please follow our guide for [suggesting a new feature](#suggesting-enhancements--new-features)
 2. Code your contribution in the right place:
     
-    - Are you adding or changing a dev feature ? Create a new branch for each feature and use the _DEV folder and group features as subfolders. Each feature/functionality must have a test scene attached with a fully working and testable implementation.
+    - Are you adding or changing a dev feature ? Create a new branch for each feature (*use feature-**feature-name*** as branch name template) and use the _DEV folder and group features as subfolders. Each feature/functionality must have a test scene attached with a fully working and testable implementation.
     - Are you fixing a bug or improving main files ? Create a new branch for each fix and be sure to also update and test the demo scenes if necessary.
 
 3. Create or update a test/demo scene for the contribution
