@@ -41,6 +41,11 @@ public class SpiderLegIK : MonoBehaviour
         _totalLength = upperLegLength + middleLegLength + lowerLegLength;
     }
 
+    private void Start()
+    {
+        SolveIK();
+    }
+
     private void Update()
     {
         Vector3 targetPosition = _legIKTarget.Position;
@@ -52,7 +57,7 @@ public class SpiderLegIK : MonoBehaviour
 
         if ((targetPosition - LowerLegEnd).magnitude > delta)
         {
-            BackwardIK(ForwardIK());
+            SolveIK();
             // TODO: Freeze leg, follow target when distance is greater, Pole
         }
     }
@@ -62,12 +67,16 @@ public class SpiderLegIK : MonoBehaviour
         lowerLeg.position = _legIKTarget.Position + _legIKTarget.Normal * lowerLegLength;
         lowerLeg.LookAt(_legIKTarget.Position);
         _lowerLegRotation = lowerLeg.rotation; // Used to freeze rotation of lower leg
+        SolveIK();
+    }
+
+    private void SolveIK()
+    {
+        BackwardIK(ForwardIK());
     }
 
     private Vector3[] ForwardIK()
     {
-        // Vector3.up can be replaced with the normal of the walked surface
-        // Vector3 intermediateLowerLegPos = _targetPosition + Vector3.up * lowerLegLength;
         Vector3 intermediateLowerLegPos = _legIKTarget.Position + _legIKTarget.Normal * lowerLegLength;
         Vector3 intermediateMiddleLegPos = intermediateLowerLegPos -
                                            (intermediateLowerLegPos - middleLeg.position).normalized * middleLegLength;
@@ -80,7 +89,6 @@ public class SpiderLegIK : MonoBehaviour
         upperLeg.LookAt(forwardIKPositions[0]);
         middleLeg.position = UpperLegEnd;
         middleLeg.LookAt(forwardIKPositions[1]);
-        // middleLeg.LookAt(lowerLeg);
         lowerLeg.position = MiddleLegEnd;
         lowerLeg.rotation = _lowerLegRotation;
         // lowerLeg.LookAt(_legIKTarget.Position);
