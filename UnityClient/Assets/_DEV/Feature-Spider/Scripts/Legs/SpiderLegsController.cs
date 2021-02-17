@@ -14,14 +14,39 @@ public class SpiderLegsController : MonoBehaviour
     private List<Collider> _legsColliders;
     private Dictionary<SpiderLegIK, IEnumerator> _runningLegInterpolations;
 
-    private void Awake()
+    public bool manuallyInitialized;
+    private bool _initialized;
+
+    public void Init(LegIKTargetPair[] legIKsTargets, float maxLegDistance,
+        float legRaiseHeight, float timeToMoveLeg)
     {
+        this.legIKsTargets = legIKsTargets;
+        this.maxLegDistance = maxLegDistance;
+        this.legRaiseHeight = legRaiseHeight;
+        this.timeToMoveLeg = timeToMoveLeg;
+        
         _legsColliders = GetComponentsInChildren<Collider>().ToList();
         _runningLegInterpolations = new Dictionary<SpiderLegIK, IEnumerator>(legIKsTargets.Length);
+        
+        _initialized = true;
+    }
+
+    private void Awake()
+    {
+        if (manuallyInitialized)
+        {
+            _legsColliders = GetComponentsInChildren<Collider>().ToList();
+            _runningLegInterpolations = new Dictionary<SpiderLegIK, IEnumerator>(legIKsTargets.Length);
+        }
     }
 
     private void LateUpdate()
     {
+        if (!_initialized && !manuallyInitialized)
+        {
+            return;
+        }
+        
         UpdateTargets();
         UpdateLegs();
     }
@@ -65,7 +90,6 @@ public class SpiderLegsController : MonoBehaviour
                     Normal = targetForward,
                     Position = targetPosition
                 };
-                // pair.legIK.CurrentIKTarget = new SpiderLegIKTarget {Normal = targetForward, Position = targetPosition};
                 if (_runningLegInterpolations.ContainsKey(legIK))
                 {
                     return;
@@ -89,7 +113,12 @@ public class SpiderLegsController : MonoBehaviour
         Vector3 nextNormal = nextTarget.Normal;
         Vector3 middlePos = Vector3.Slerp(prevPos, nextPos, 0.5f);
         Vector3 middleNormal = Vector3.Slerp(prevNormal, nextNormal, 0.5f);
-        // raisedMiddlePos Might not look like raising at all when walking uneven terrain
+        /*
+         * raisedMiddlePos Might not look like raising at all
+         * when walking uneven terrain.
+         * Possible idea for enhancement: get the highest point of all 3
+         * (prev, middle, next).
+         */
         Vector3 raisedMiddlePos = middlePos + middleNormal * legRaiseHeight;
 
         Vector3 lastRaisedPos = prevPos;
@@ -97,9 +126,8 @@ public class SpiderLegsController : MonoBehaviour
         while (elapsedTime < timeToMoveLeg)
         {
             elapsedTime += Time.deltaTime;
-            // float t = Mathf.Clamp01(elapsedTime * 2 / timeToMoveLeg);
             float t = Mathf.Clamp01(elapsedTime / timeToMoveLeg);
-            
+
             Vector3 newPos, newNormal;
             if (t < timeToMoveLeg / 2)
             {
@@ -109,13 +137,13 @@ public class SpiderLegsController : MonoBehaviour
             }
             else
             {
-                newPos = Vector3.Slerp(lastRaisedPos, nextPos, (t - timeToMoveLeg / 2)*2);
-                newNormal = Vector3.Slerp(middleNormal, nextNormal, (t-timeToMoveLeg/2)*2);
+                newPos = Vector3.Slerp(lastRaisedPos, nextPos, (t - timeToMoveLeg / 2) * 2);
+                newNormal = Vector3.Slerp(middleNormal, nextNormal, (t - timeToMoveLeg / 2) * 2);
             }
 
             // newPos = Vector3.Lerp(prevPos, nextPos, t);
             // newNormal = Vector3.Lerp(prevNormal, nextNormal, t);
-            
+
             leg.CurrentIKTarget = new SpiderLegIKTarget
             {
                 Normal = newNormal,
