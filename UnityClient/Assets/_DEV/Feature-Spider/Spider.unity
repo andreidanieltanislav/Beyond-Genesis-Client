@@ -172,6 +172,8 @@ MonoBehaviour:
   - legIK: {fileID: 1249136687}
     legTarget: {fileID: 783457724}
   maxLegDistance: 2
+  legRaiseHeight: 1
+  timeToMoveLeg: 0.5
 --- !u!1 &587660015
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,6 +715,10 @@ MonoBehaviour:
   middleLegLength: 1.5
   lowerLegLength: 1
   delta: 0.01
+  iterations: 100
+  legSpeed: 10
+  legRaiseHeight: 0.5
+  timeToMoveLeg: 1
 --- !u!1 &1316444960
 GameObject:
   m_ObjectHideFlags: 0
