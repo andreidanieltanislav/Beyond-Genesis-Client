@@ -1,7 +1,5 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
-[ExecuteInEditMode]
 public class SpiderLegIK : MonoBehaviour
 {
     public Transform upperLeg;
@@ -12,13 +10,24 @@ public class SpiderLegIK : MonoBehaviour
     public float middleLegLength = 1f;
     public float lowerLegLength = 0.5f;
 
-    public Transform target;
     public float delta = 0.01f;
 
+    public SpiderLegIKTarget LegIKTarget
+    {
+        get => _legIKTarget;
+        set
+        {
+            _legIKTarget = value;
+            UpdateLegPosition();
+        }
+    }
+
+    private SpiderLegIKTarget _legIKTarget;
     private float _totalLength;
     private Vector3 _initialUpperLegLocalPos;
     private Vector3 _initialMiddleLegLocalPos;
     private Vector3 _initialLowerLegLocalPos;
+    private Quaternion _lowerLegRotation;
 
     private Vector3 UpperLegEnd => upperLeg.position + upperLeg.forward * upperLegLength;
     private Vector3 MiddleLegEnd => middleLeg.position + middleLeg.forward * middleLegLength;
@@ -30,28 +39,36 @@ public class SpiderLegIK : MonoBehaviour
         _initialMiddleLegLocalPos = middleLeg.localPosition;
         _initialLowerLegLocalPos = lowerLeg.localPosition;
         _totalLength = upperLegLength + middleLegLength + lowerLegLength;
-
-        EditorApplication.update += Update;
     }
 
     private void Update()
     {
-        if (_totalLength <= (target.position - upperLeg.position).magnitude)
+        Vector3 targetPosition = _legIKTarget.Position;
+        if (_totalLength <= (targetPosition - upperLeg.position).magnitude)
         {
             StretchLeg();
             return;
         }
 
-        if ((target.position - LowerLegEnd).magnitude > delta)
+        if ((targetPosition - LowerLegEnd).magnitude > delta)
         {
             BackwardIK(ForwardIK());
+            // TODO: Freeze leg, follow target when distance is greater, Pole
         }
+    }
+    
+    private void UpdateLegPosition()
+    {
+        lowerLeg.position = _legIKTarget.Position + _legIKTarget.Normal * lowerLegLength;
+        lowerLeg.LookAt(_legIKTarget.Position);
+        _lowerLegRotation = lowerLeg.rotation; // Used to freeze rotation of lower leg
     }
 
     private Vector3[] ForwardIK()
     {
         // Vector3.up can be replaced with the normal of the walked surface
-        Vector3 intermediateLowerLegPos = target.position + Vector3.up * lowerLegLength;
+        // Vector3 intermediateLowerLegPos = _targetPosition + Vector3.up * lowerLegLength;
+        Vector3 intermediateLowerLegPos = _legIKTarget.Position + _legIKTarget.Normal * lowerLegLength;
         Vector3 intermediateMiddleLegPos = intermediateLowerLegPos -
                                            (intermediateLowerLegPos - middleLeg.position).normalized * middleLegLength;
 
@@ -65,7 +82,8 @@ public class SpiderLegIK : MonoBehaviour
         middleLeg.LookAt(forwardIKPositions[1]);
         // middleLeg.LookAt(lowerLeg);
         lowerLeg.position = MiddleLegEnd;
-        lowerLeg.LookAt(target);
+        lowerLeg.rotation = _lowerLegRotation;
+        // lowerLeg.LookAt(_legIKTarget.Position);
     }
 
     // To be used when target is out of reach
@@ -78,10 +96,17 @@ public class SpiderLegIK : MonoBehaviour
         // middleLeg.localPosition = _initialMiddleLegLocalPos;
         // lowerLeg.LookAt(target);
         // lowerLeg.localPosition = _initialLowerLegLocalPos;
-        upperLeg.LookAt(target);
+        Vector3 targetPosition = _legIKTarget.Position;
+        upperLeg.LookAt(targetPosition);
         middleLeg.position = UpperLegEnd;
-        middleLeg.LookAt(target);
+        middleLeg.LookAt(targetPosition);
         lowerLeg.position = MiddleLegEnd;
-        lowerLeg.LookAt(target);
+        lowerLeg.LookAt(targetPosition);
     }
+}
+
+public struct SpiderLegIKTarget
+{
+    public Vector3 Position;
+    public Vector3 Normal;
 }
