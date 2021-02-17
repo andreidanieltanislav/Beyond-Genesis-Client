@@ -8,6 +8,7 @@ public class SpiderLegsController : MonoBehaviour
 {
     public LegIKTargetPair[] legIKsTargets;
     public float maxLegDistance = 2f;
+    public float minLegDistance = 1f;
     public float legRaiseHeight = 1f;
     public float timeToMoveLeg = 0.5f;
 
@@ -17,6 +18,8 @@ public class SpiderLegsController : MonoBehaviour
     public bool manuallyInitialized;
     private bool _initialized;
 
+    private int _movingLegsCount;
+
     public void Init(LegIKTargetPair[] legIKsTargets, float maxLegDistance,
         float legRaiseHeight, float timeToMoveLeg)
     {
@@ -24,10 +27,10 @@ public class SpiderLegsController : MonoBehaviour
         this.maxLegDistance = maxLegDistance;
         this.legRaiseHeight = legRaiseHeight;
         this.timeToMoveLeg = timeToMoveLeg;
-        
+
         _legsColliders = GetComponentsInChildren<Collider>().ToList();
         _runningLegInterpolations = new Dictionary<SpiderLegIK, IEnumerator>(legIKsTargets.Length);
-        
+
         _initialized = true;
     }
 
@@ -46,9 +49,10 @@ public class SpiderLegsController : MonoBehaviour
         {
             return;
         }
-        
+
         UpdateTargets();
-        UpdateLegs();
+        // UpdateLegs();
+        UpdateCrossLegs();
     }
 
     private void UpdateTargets()
@@ -70,6 +74,40 @@ public class SpiderLegsController : MonoBehaviour
 
         // Restore layer
         _legsColliders.ForEach(legCollider => legCollider.gameObject.layer = previousLayer);
+    }
+
+    private void UpdateCrossLegs()
+    {
+        if (_runningLegInterpolations.Count > 0)
+        {
+            return;
+        }
+        // Check first legs. TODO: Replace with first zig-zag line
+        // _movingLegsCount = 2;
+        LegIKTargetPair pair1 = legIKsTargets[0];
+        LegIKTargetPair pair2 = legIKsTargets[1];
+        float distToTarget = (pair1.legIK.CurrentIKTarget.Position - pair1.legTarget.position).magnitude;
+        if (distToTarget < minLegDistance)
+        {
+            return;
+        }
+
+        foreach (LegIKTargetPair pair in new[] {pair1, pair2})
+        {
+            SpiderLegIKTarget nextTarget = new SpiderLegIKTarget
+            {
+                Normal = pair.legTarget.forward,
+                Position = pair.legTarget.position
+            };
+            _runningLegInterpolations[pair.legIK] = InterpolateLegPosition(
+                pair.legIK, pair.legIK.CurrentIKTarget, nextTarget);
+            StartCoroutine(_runningLegInterpolations[pair.legIK]);
+        }
+
+        StartCoroutine(UpdateOtherLegs());
+
+        // Drag the others, no matter the distance
+
     }
 
     private void UpdateLegs()
@@ -153,6 +191,25 @@ public class SpiderLegsController : MonoBehaviour
         }
 
         _runningLegInterpolations.Remove(leg);
+        // _movingLegsCount--;
+    }
+
+    private IEnumerator UpdateOtherLegs()
+    {
+        yield return new WaitWhile(() => _runningLegInterpolations.Count > 0);
+        LegIKTargetPair pair1 = legIKsTargets[2];
+        LegIKTargetPair pair2 = legIKsTargets[3];
+        foreach (LegIKTargetPair pair in new[] {pair1, pair2})
+        {
+            SpiderLegIKTarget nextTarget = new SpiderLegIKTarget
+            {
+                Normal = pair.legTarget.forward,
+                Position = pair.legTarget.position
+            };
+            _runningLegInterpolations[pair.legIK] = InterpolateLegPosition(
+                pair.legIK, pair.legIK.CurrentIKTarget, nextTarget);
+            StartCoroutine(_runningLegInterpolations[pair.legIK]);
+        }
     }
 }
 

@@ -64,10 +64,10 @@ public class SpiderGenerator : MonoBehaviour
         legTargets.transform.parent = transform;
 
         float bodyZStep = bodyScale.z / (legsPairCount + 1);
-        float bodyZStart = -bodyScale.z / 2;
+        float bodyZStart = bodyScale.z / 2;
         for (int i = 0; i < legsPairCount; i++)
         {
-            float zPos = bodyZStart + bodyZStep * (i + 1); // TODO: Tweak
+            float zPos = bodyZStart - bodyZStep * (i + 1); // TODO: Tweak
             SpiderLegIK rightLeg = CreateLeg($" (Right {i})");
             rightLeg.transform.parent = legs.transform;
             rightLeg.transform.localPosition = new Vector3(bodyScale.x / 2, 0, zPos);
