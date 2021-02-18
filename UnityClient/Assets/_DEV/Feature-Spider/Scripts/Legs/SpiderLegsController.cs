@@ -7,7 +7,6 @@ using UnityEngine;
 public class SpiderLegsController : MonoBehaviour
 {
     public LegIKTargetPair[] legIKsTargets;
-    public float maxLegDistance = 2f;
     public float minLegDistance = 1f;
     public float legRaiseHeight = 1f;
     public float timeToMoveLeg = 0.5f;
@@ -18,11 +17,10 @@ public class SpiderLegsController : MonoBehaviour
     public bool manuallyInitialized;
     private bool _initialized;
 
-    public void Init(LegIKTargetPair[] legIKsTargets, float maxLegDistance, float minLegDistance,
+    public void Init(LegIKTargetPair[] legIKsTargets, float minLegDistance,
         float legRaiseHeight, float timeToMoveLeg)
     {
         this.legIKsTargets = legIKsTargets;
-        this.maxLegDistance = maxLegDistance;
         this.minLegDistance = minLegDistance;
         this.legRaiseHeight = legRaiseHeight;
         this.timeToMoveLeg = timeToMoveLeg;

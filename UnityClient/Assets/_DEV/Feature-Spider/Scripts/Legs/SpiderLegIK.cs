@@ -85,7 +85,6 @@ public class SpiderLegIK : MonoBehaviour
         }
 
         SolveIK();
-        // TODO: Pole
     }
 
     private void UpdateLegPosition()
@@ -99,11 +98,11 @@ public class SpiderLegIK : MonoBehaviour
     private void SolveIK()
     {
         int ikIterations = iterations;
-        // while (ikIterations > 0)
         // Do at least one step, even if delta is still the same, in order to correct limbs orientation
         do
         {
             BackwardIK(ForwardIK());
+            RotateTowardsHint();
             ikIterations--;
         } while ((_currentIKTarget.Position - LowerLegEnd).magnitude > delta && ikIterations > 0);
     }
@@ -124,6 +123,17 @@ public class SpiderLegIK : MonoBehaviour
         middleLeg.LookAt(forwardIKPositions[1]);
         lowerLeg.position = MiddleLegEnd;
         lowerLeg.rotation = _lowerLegRotation;
+    }
+
+    private void RotateTowardsHint()
+    {
+        Vector3 upperPos = upperLeg.position, middlePos = middleLeg.position, lowerPos = lowerLeg.position;
+        Vector3 hint = upperPos + Vector3.up;
+        Plane plane = new Plane((upperPos - lowerPos).normalized, upperPos);
+        Vector3 projectedHint = plane.ClosestPointOnPlane(hint);
+        Vector3 projectedMiddle = plane.ClosestPointOnPlane(middlePos);
+        float angle = Vector3.SignedAngle(projectedMiddle - upperPos, projectedHint - upperPos, plane.normal);
+        middleLeg.position = Quaternion.AngleAxis(angle, plane.normal) * (middlePos - upperPos) + upperPos;
     }
 
     // To be used when target is out of reach

@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 1450669315}
   - component: {fileID: 1450669314}
   m_Layer: 0
-  m_Name: SpiderAuto
+  m_Name: Spider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -244,17 +244,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51ec51c63f534c879d9b9be6e7a40666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyScale: {x: 1, y: 1, z: 3}
-  upperLegLength: 1.5
-  middleLegLength: 1.5
-  lowerLegLength: 1
+  bodyScale: {x: 1.5, y: 1.5, z: 5}
+  upperLegLength: 2
+  middleLegLength: 2.5
+  lowerLegLength: 1.5
   legsWidth: 0.5
   ikDelta: 0.01
   ikIterations: 100
-  legsPairCount: 2
-  maxLegDistance: 2
+  legsPairCount: 4
+  minLegDistanceToMove: 1
   legsRaiseHeight: 1
   timeToMoveLeg: 0.5
+  spaceBetweenTargetsScale: 2
+  xDistanceFromBodyToTargets: 3
 --- !u!4 &1450669315
 Transform:
   m_ObjectHideFlags: 0
@@ -263,11 +265,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1450669313}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1514444667
 GameObject:
@@ -296,7 +298,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1514444667}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.35, y: 0, z: -3.39}
+  m_LocalPosition: {x: -0.67, y: 0, z: 3.09}
   m_LocalScale: {x: 2, y: 1.5, z: 2}
   m_Children: []
   m_Father: {fileID: 1840166138}
@@ -455,7 +457,7 @@ Transform:
   m_GameObject: {fileID: 1840166134}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1514444668}
   m_Father: {fileID: 0}
@@ -544,77 +546,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &2472344011827242707
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843376, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843377, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_Name
-      value: Spider
-      objectReference: {fileID: 0}
-    - target: {fileID: 2472344011414843377, guid: 06a4a65866592bd4496e4d0793a32008,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 06a4a65866592bd4496e4d0793a32008, type: 3}

@@ -9,11 +9,11 @@ public class SpiderGenerator : MonoBehaviour
     public float ikDelta = 0.01f;
     public int ikIterations = 100;
     public int legsPairCount = 4;
-    public float maxLegDistance = 2f;
-    public float minLegDistance = 1f; // Must be lower than the leg's total length
+    public float minLegDistanceToMove = 1f; // Must be lower than the leg's total length
     public float legsRaiseHeight = 1f;
     public float timeToMoveLeg = 0.5f;
     public float spaceBetweenTargetsScale = 2f;
+    public float xDistanceFromBodyToTargets = 3f;
 
     private Transform _legTargets;
 
@@ -68,13 +68,14 @@ public class SpiderGenerator : MonoBehaviour
         GameObject legTargets = new GameObject("LegTargets");
         legTargets.transform.parent = transform;
 
+        // Can be tweaked; determines distance between legs
         float bodyZStep = bodyScale.z / (legsPairCount + 1);
         float bodyZStart = bodyScale.z / 2;
         float targetsZStart = bodyScale.z * spaceBetweenTargetsScale / 2;
         float targetsZStep = bodyScale.z * spaceBetweenTargetsScale / (legsPairCount + 1);
         for (int i = 0; i < legsPairCount; i++)
         {
-            float zPos = bodyZStart - bodyZStep * (i + 1); // TODO: Tweak
+            float zPos = bodyZStart - bodyZStep * (i + 1);
             float targetZPos = targetsZStart - targetsZStep * (i + 1);
             SpiderLegIK rightLeg = CreateLeg($" (Right {i})");
             rightLeg.transform.parent = legs.transform;
@@ -86,12 +87,12 @@ public class SpiderGenerator : MonoBehaviour
 
             GameObject rightLegTarget = new GameObject($"LegTarget (Right {i})");
             rightLegTarget.transform.parent = legTargets.transform;
-            rightLegTarget.transform.localPosition = new Vector3(minLegDistance, 0, targetZPos);
+            rightLegTarget.transform.localPosition = new Vector3(xDistanceFromBodyToTargets, 0, targetZPos);
             rightLegTarget.transform.localScale = Vector3.one * 0.5f;
 
             GameObject leftLegTarget = new GameObject($"LegTarget (Left {i})");
             leftLegTarget.transform.parent = legTargets.transform;
-            leftLegTarget.transform.localPosition = new Vector3(-minLegDistance, 0, targetZPos);
+            leftLegTarget.transform.localPosition = new Vector3(-xDistanceFromBodyToTargets, 0, targetZPos);
             leftLegTarget.transform.localScale = Vector3.one * 0.5f;
 
             LegIKTargetPair pair = new LegIKTargetPair
@@ -108,8 +109,8 @@ public class SpiderGenerator : MonoBehaviour
             legIKTargetPairs.Add(pair);
         }
 
-        legsController.Init(legIKTargetPairs.ToArray(), maxLegDistance,
-            minLegDistance, legsRaiseHeight, timeToMoveLeg);
+        legsController.Init(legIKTargetPairs.ToArray(),
+            minLegDistanceToMove, legsRaiseHeight, timeToMoveLeg);
         legs.transform.localPosition = Vector3.zero;
         _legTargets = legTargets.transform;
     }
@@ -164,7 +165,7 @@ public class SpiderGenerator : MonoBehaviour
         {
             return;
         }
-        
+
         Gizmos.color = new Color(0f, 0.7f, 0.7f, 1f);
 
         foreach (Transform legTarget in _legTargets)
