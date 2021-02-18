@@ -14,6 +14,7 @@ public class SpiderGenerator : MonoBehaviour
     public float timeToMoveLeg = 0.5f;
     public float spaceBetweenTargetsScale = 2f;
     public float xDistanceFromBodyToTargets = 3f;
+    public float baseAnimationHeightOffset = 0.5f;
 
     private Transform _legTargets;
 
@@ -117,7 +118,7 @@ public class SpiderGenerator : MonoBehaviour
             minLegDistanceToMove, legsRaiseHeight, timeToMoveLeg);
         controller.Init(legsController,
             (upperLegLength + middleLegLength + lowerLegLength) / 2,
-            spine.transform);
+            spine.transform, baseAnimationHeightOffset);
         legs.transform.localPosition = Vector3.zero;
         _legTargets = legTargets.transform;
     }

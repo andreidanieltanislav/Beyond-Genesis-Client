@@ -5,18 +5,20 @@ public class SpiderController : MonoBehaviour
 {
     public SpiderLegsController legsController;
 
-    private Vector3 _initialUp;
     private float _height;
     private Transform _spine;
+    private Vector3 _spineBasePosition;
+    private float _baseAnimationHeightOffset;
     private bool _initialized;
 
-    public void Init(SpiderLegsController legsController, float height, Transform spine)
+    public void Init(SpiderLegsController legsController, float height, Transform spine, float baseAnimationHeightOffset)
     {
         this.legsController = legsController;
 
-        _initialUp = transform.up;
         _height = height;
         _spine = spine;
+        _spineBasePosition = spine.position;
+        _baseAnimationHeightOffset = baseAnimationHeightOffset;
         _initialized = true;
     }
 
@@ -29,6 +31,7 @@ public class SpiderController : MonoBehaviour
 
         AdjustHeight();
         AdjustRotation();
+        BaseAnimation();
     }
 
     private void AdjustHeight()
@@ -36,10 +39,9 @@ public class SpiderController : MonoBehaviour
         KeyValuePair<Vector3, Vector3> meanPosAndNormal = legsController.GetMeanLegsPosAndNormal();
         Vector3 meanPos = meanPosAndNormal.Key;
         Vector3 meanNormal = meanPosAndNormal.Value;
-        Vector3 currentPos = _spine.position;
-        // Debug.Log($"MeanPos: {meanPos}; MeanNormal: {meanNormal}; height: {_height}");
+        Vector3 currentPos = _spineBasePosition;
 
-        _spine.position = Vector3.Lerp(currentPos, meanPos + meanNormal * _height, Time.deltaTime * 2);
+        _spineBasePosition = Vector3.Lerp(currentPos, meanPos + meanNormal * _height, Time.deltaTime * 2);
     }
 
     private void AdjustRotation()
@@ -50,7 +52,13 @@ public class SpiderController : MonoBehaviour
 
         Vector3 right = (rightPos - leftPos).normalized;
         Vector3 newUp = Vector3.Cross(transform.forward, right);
-        // Debug.Log($"new right: {right}; currentForward: {transform.forward}, new up: {newUp}");
         _spine.up = Vector3.Lerp(_spine.up, newUp, Time.deltaTime);
+    }
+
+    private void BaseAnimation()
+    {
+        // Move up and down a bit
+        float offset = _baseAnimationHeightOffset * _height / 10;
+        _spine.position = _spineBasePosition + _spine.up * (Mathf.Sin(Time.time * 2) * offset);
     }
 }
