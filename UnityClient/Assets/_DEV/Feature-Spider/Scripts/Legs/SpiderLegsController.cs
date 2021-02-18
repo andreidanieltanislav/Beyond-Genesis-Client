@@ -192,7 +192,7 @@ public class SpiderLegsController : MonoBehaviour
         }
     }
 
-    public KeyValuePair<Vector3, Vector3> GetMeanPosAndNormal()
+    public KeyValuePair<Vector3, Vector3> GetMeanLegsPosAndNormal()
     {
         int count = 0;
         Vector3 pos = Vector3.zero;
@@ -208,6 +208,23 @@ public class SpiderLegsController : MonoBehaviour
         pos /= count;
         normal /= count;
         return new KeyValuePair<Vector3, Vector3>(pos, normal);
+    }
+
+    public KeyValuePair<Vector3, Vector3> GetMeanLeftAndRightLegsPos()
+    {
+        int pairs = legIKsTargets.Length / 2;
+        Vector3 leftPos = Vector3.zero;
+        Vector3 rightPos = Vector3.zero;
+        for (int i = 0; i < pairs; i++)
+        {
+            rightPos += legIKsTargets[2 * i].legIK.CurrentIKTarget.Position;
+            leftPos += legIKsTargets[2 * i + 1].legIK.CurrentIKTarget.Position;
+        }
+
+        rightPos /= pairs;
+        leftPos /= pairs;
+
+        return new KeyValuePair<Vector3, Vector3>(leftPos, rightPos);
     }
 }
 

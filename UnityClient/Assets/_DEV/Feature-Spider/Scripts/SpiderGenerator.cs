@@ -44,7 +44,6 @@ public class SpiderGenerator : MonoBehaviour
          * }
          */
         // transform.localPosition = Vector3.up * (upperLegLength + middleLegLength + lowerLegLength) / 2;
-        transform.localPosition = Vector3.zero;
         SpiderLegsController legsController = gameObject.AddComponent<SpiderLegsController>();
         SpiderController controller = gameObject.AddComponent<SpiderController>();
         List<LegIKTargetPair> legIKTargetPairs = new List<LegIKTargetPair>(legsPairCount * 2);
@@ -71,6 +70,7 @@ public class SpiderGenerator : MonoBehaviour
 
         GameObject legTargets = new GameObject("LegTargets");
         legTargets.transform.parent = transform;
+        legTargets.transform.localPosition = Vector3.zero;
 
         // Can be tweaked; determines distance between legs
         float bodyZStep = bodyScale.z / (legsPairCount + 1);

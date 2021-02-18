@@ -22,22 +22,35 @@ public class SpiderController : MonoBehaviour
 
     private void Update()
     {
-        if (!_initialized || Time.realtimeSinceStartup <= 5)
+        if (!_initialized)
         {
             return;
         }
 
         AdjustHeight();
+        AdjustRotation();
     }
 
     private void AdjustHeight()
     {
-        KeyValuePair<Vector3, Vector3> meanPosAndNormal = legsController.GetMeanPosAndNormal();
+        KeyValuePair<Vector3, Vector3> meanPosAndNormal = legsController.GetMeanLegsPosAndNormal();
         Vector3 meanPos = meanPosAndNormal.Key;
         Vector3 meanNormal = meanPosAndNormal.Value;
         Vector3 currentPos = _spine.position;
-        Debug.Log($"MeanPos: {meanPos}; MeanNormal: {meanNormal}; height: {_height}");
+        // Debug.Log($"MeanPos: {meanPos}; MeanNormal: {meanNormal}; height: {_height}");
 
-        _spine.position = Vector3.Lerp(currentPos, meanPos + meanNormal * _height, Time.deltaTime);
+        _spine.position = Vector3.Lerp(currentPos, meanPos + meanNormal * _height, Time.deltaTime * 2);
+    }
+
+    private void AdjustRotation()
+    {
+        KeyValuePair<Vector3, Vector3> meanLeftAndRightPos = legsController.GetMeanLeftAndRightLegsPos();
+        Vector3 leftPos = meanLeftAndRightPos.Key;
+        Vector3 rightPos = meanLeftAndRightPos.Value;
+
+        Vector3 right = (rightPos - leftPos).normalized;
+        Vector3 newUp = Vector3.Cross(transform.forward, right);
+        // Debug.Log($"new right: {right}; currentForward: {transform.forward}, new up: {newUp}");
+        _spine.up = Vector3.Lerp(_spine.up, newUp, Time.deltaTime);
     }
 }
