@@ -191,6 +191,24 @@ public class SpiderLegsController : MonoBehaviour
             }
         }
     }
+
+    public KeyValuePair<Vector3, Vector3> GetMeanPosAndNormal()
+    {
+        int count = 0;
+        Vector3 pos = Vector3.zero;
+        Vector3 normal = Vector3.zero;
+
+        foreach (LegIKTargetPair pair in legIKsTargets)
+        {
+            pos += pair.legTarget.position;
+            normal += pair.legTarget.forward;
+            count++;
+        }
+
+        pos /= count;
+        normal /= count;
+        return new KeyValuePair<Vector3, Vector3>(pos, normal);
+    }
 }
 
 [Serializable]

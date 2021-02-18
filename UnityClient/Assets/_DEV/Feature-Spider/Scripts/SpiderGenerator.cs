@@ -43,13 +43,17 @@ public class SpiderGenerator : MonoBehaviour
          *      LegTargets: [ GameObjects ],
          * }
          */
+        // transform.localPosition = Vector3.up * (upperLegLength + middleLegLength + lowerLegLength) / 2;
+        transform.localPosition = Vector3.zero;
         SpiderLegsController legsController = gameObject.AddComponent<SpiderLegsController>();
+        SpiderController controller = gameObject.AddComponent<SpiderController>();
         List<LegIKTargetPair> legIKTargetPairs = new List<LegIKTargetPair>(legsPairCount * 2);
 
         // Spine
         GameObject spine = new GameObject("Spine");
         spine.transform.parent = transform;
-        spine.transform.localPosition = Vector3.zero;
+        // spine.transform.localPosition = Vector3.zero;
+        spine.transform.localPosition = Vector3.up * (upperLegLength + middleLegLength + lowerLegLength) / 2;
 
         GameObject spineBody = GameObject.CreatePrimitive(PrimitiveType.Cube);
         spineBody.transform.localScale = bodyScale;
@@ -111,6 +115,9 @@ public class SpiderGenerator : MonoBehaviour
 
         legsController.Init(legIKTargetPairs.ToArray(),
             minLegDistanceToMove, legsRaiseHeight, timeToMoveLeg);
+        controller.Init(legsController,
+            (upperLegLength + middleLegLength + lowerLegLength) / 2,
+            spine.transform);
         legs.transform.localPosition = Vector3.zero;
         _legTargets = legTargets.transform;
     }
