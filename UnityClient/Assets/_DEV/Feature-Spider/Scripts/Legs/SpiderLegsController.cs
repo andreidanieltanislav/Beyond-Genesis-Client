@@ -18,11 +18,12 @@ public class SpiderLegsController : MonoBehaviour
     public bool manuallyInitialized;
     private bool _initialized;
 
-    public void Init(LegIKTargetPair[] legIKsTargets, float maxLegDistance,
+    public void Init(LegIKTargetPair[] legIKsTargets, float maxLegDistance, float minLegDistance,
         float legRaiseHeight, float timeToMoveLeg)
     {
         this.legIKsTargets = legIKsTargets;
         this.maxLegDistance = maxLegDistance;
+        this.minLegDistance = minLegDistance;
         this.legRaiseHeight = legRaiseHeight;
         this.timeToMoveLeg = timeToMoveLeg;
 
@@ -49,7 +50,6 @@ public class SpiderLegsController : MonoBehaviour
         }
 
         UpdateTargets();
-        // UpdateLegs();
         UpdateCrossLegs();
     }
 
@@ -80,8 +80,8 @@ public class SpiderLegsController : MonoBehaviour
         {
             return;
         }
-        // Check first legs. TODO: Replace with first zig-zag line
-
+        
+        // Check first legs
         LegIKTargetPair firstPair = legIKsTargets[0];
         float distToTarget = (firstPair.legIK.CurrentIKTarget.Position - firstPair.legTarget.position).magnitude;
         if (distToTarget < minLegDistance)
@@ -110,40 +110,9 @@ public class SpiderLegsController : MonoBehaviour
 
     }
 
-    private void UpdateLegs()
-    {
-        foreach (LegIKTargetPair pair in legIKsTargets)
-        {
-            Vector3 targetPosition = pair.legTarget.position;
-            Vector3 targetForward = pair.legTarget.forward;
-            SpiderLegIK legIK = pair.legIK;
-            float sqrDistanceBetweenLegAndTarget = (legIK.CurrentIKTarget.Position - targetPosition).sqrMagnitude;
-
-            if (sqrDistanceBetweenLegAndTarget > maxLegDistance * maxLegDistance)
-            {
-                // Leg is too far away, update its target (position)
-                Debug.Log("Updating leg position");
-                SpiderLegIKTarget nextTarget = new SpiderLegIKTarget
-                {
-                    Normal = targetForward,
-                    Position = targetPosition
-                };
-                if (_runningLegInterpolations.ContainsKey(legIK))
-                {
-                    return;
-                    // StopCoroutine(_runningLegInterpolations[legIK]);
-                }
-
-                _runningLegInterpolations[legIK] = InterpolateLegPosition(legIK, legIK.CurrentIKTarget, nextTarget);
-                StartCoroutine(_runningLegInterpolations[legIK]);
-            }
-        }
-    }
-
     private IEnumerator InterpolateLegPosition(SpiderLegIK leg, SpiderLegIKTarget previousTarget,
         SpiderLegIKTarget nextTarget)
     {
-        Debug.Log("Started coroutine");
         float elapsedTime = 0f;
         Vector3 prevPos = previousTarget.Position;
         Vector3 prevNormal = previousTarget.Normal;
@@ -205,24 +174,6 @@ public class SpiderLegsController : MonoBehaviour
         return InterpolateLegPosition(leg, leg.CurrentIKTarget, nextTarget);
     }
 
-    private IEnumerator UpdateOtherLegs2()
-    {
-        yield return new WaitWhile(() => _runningLegInterpolations.Count > 0);
-        LegIKTargetPair pair1 = legIKsTargets[2];
-        LegIKTargetPair pair2 = legIKsTargets[3];
-        foreach (LegIKTargetPair pair in new[] {pair1, pair2})
-        {
-            SpiderLegIKTarget nextTarget = new SpiderLegIKTarget
-            {
-                Normal = pair.legTarget.forward,
-                Position = pair.legTarget.position
-            };
-            _runningLegInterpolations[pair.legIK] = InterpolateLegPosition(
-                pair.legIK, pair.legIK.CurrentIKTarget, nextTarget);
-            StartCoroutine(_runningLegInterpolations[pair.legIK]);
-        }
-    }
-    
     private IEnumerator UpdateOtherLegs()
     {
         yield return new WaitWhile(() => _runningLegInterpolations.Count > 0);
