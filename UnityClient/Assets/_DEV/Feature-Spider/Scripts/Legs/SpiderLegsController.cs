@@ -146,9 +146,6 @@ public class SpiderLegsController : MonoBehaviour
                 newNormal = Vector3.Slerp(middleNormal, nextNormal, (t - timeToMoveLeg / 2) * 2);
             }
 
-            // newPos = Vector3.Lerp(prevPos, nextPos, t);
-            // newNormal = Vector3.Lerp(prevNormal, nextNormal, t);
-
             leg.CurrentIKTarget = new SpiderLegIKTarget
             {
                 Normal = newNormal,

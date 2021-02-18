@@ -52,7 +52,6 @@ public class SpiderGenerator : MonoBehaviour
         // Spine
         GameObject spine = new GameObject("Spine");
         spine.transform.parent = transform;
-        // spine.transform.localPosition = Vector3.zero;
         spine.transform.localPosition = Vector3.up * (upperLegLength + middleLegLength + lowerLegLength) / 2;
 
         GameObject spineBody = GameObject.CreatePrimitive(PrimitiveType.Cube);

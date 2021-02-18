@@ -54,7 +54,6 @@ public class SpiderLegIK : MonoBehaviour
         _totalLength = upperLegLength + middleLegLength + lowerLegLength;
         _previousIKTarget = new SpiderLegIKTarget {Normal = Vector3.zero, Position = Vector3.zero};
         _intermediateIKTarget = _previousIKTarget;
-        Debug.Log($"Intermediate {_intermediateIKTarget.Position}");
         
         _initialized = true;
     }
@@ -66,7 +65,6 @@ public class SpiderLegIK : MonoBehaviour
             _totalLength = upperLegLength + middleLegLength + lowerLegLength;
             _previousIKTarget = new SpiderLegIKTarget {Normal = Vector3.zero, Position = Vector3.zero};
             _intermediateIKTarget = _previousIKTarget;
-            Debug.Log($"Intermediate {_intermediateIKTarget.Position}");
         }
     }
 
