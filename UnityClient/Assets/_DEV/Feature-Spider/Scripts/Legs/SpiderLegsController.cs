@@ -18,8 +18,6 @@ public class SpiderLegsController : MonoBehaviour
     public bool manuallyInitialized;
     private bool _initialized;
 
-    private int _movingLegsCount;
-
     public void Init(LegIKTargetPair[] legIKsTargets, float maxLegDistance,
         float legRaiseHeight, float timeToMoveLeg)
     {
@@ -83,30 +81,32 @@ public class SpiderLegsController : MonoBehaviour
             return;
         }
         // Check first legs. TODO: Replace with first zig-zag line
-        // _movingLegsCount = 2;
-        LegIKTargetPair pair1 = legIKsTargets[0];
-        LegIKTargetPair pair2 = legIKsTargets[1];
-        float distToTarget = (pair1.legIK.CurrentIKTarget.Position - pair1.legTarget.position).magnitude;
+
+        LegIKTargetPair firstPair = legIKsTargets[0];
+        float distToTarget = (firstPair.legIK.CurrentIKTarget.Position - firstPair.legTarget.position).magnitude;
         if (distToTarget < minLegDistance)
         {
             return;
         }
-
-        foreach (LegIKTargetPair pair in new[] {pair1, pair2})
+        
+        int legsCount = legIKsTargets.Length;
+        _runningLegInterpolations[firstPair.legIK] = PreparePairForInterpolation(firstPair);
+        StartCoroutine(_runningLegInterpolations[firstPair.legIK]);
+        for (int i = 3; i < legsCount; i+= 4)
         {
-            SpiderLegIKTarget nextTarget = new SpiderLegIKTarget
-            {
-                Normal = pair.legTarget.forward,
-                Position = pair.legTarget.position
-            };
-            _runningLegInterpolations[pair.legIK] = InterpolateLegPosition(
-                pair.legIK, pair.legIK.CurrentIKTarget, nextTarget);
+            LegIKTargetPair pair = legIKsTargets[i];
+            _runningLegInterpolations[pair.legIK] = PreparePairForInterpolation(pair);
             StartCoroutine(_runningLegInterpolations[pair.legIK]);
+            if (i + 1 < legsCount)
+            {
+                pair = legIKsTargets[i + 1];
+                _runningLegInterpolations[pair.legIK] = PreparePairForInterpolation(pair);
+                StartCoroutine(_runningLegInterpolations[pair.legIK]);
+            }
         }
 
+        // Drag the other legs, no matter the distance
         StartCoroutine(UpdateOtherLegs());
-
-        // Drag the others, no matter the distance
 
     }
 
@@ -191,10 +191,21 @@ public class SpiderLegsController : MonoBehaviour
         }
 
         _runningLegInterpolations.Remove(leg);
-        // _movingLegsCount--;
     }
 
-    private IEnumerator UpdateOtherLegs()
+    // Not a coroutine, just a shorthand
+    private IEnumerator PreparePairForInterpolation(LegIKTargetPair pair)
+    {
+        SpiderLegIK leg = pair.legIK;
+        SpiderLegIKTarget nextTarget = new SpiderLegIKTarget
+        {
+            Normal = pair.legTarget.forward,
+            Position = pair.legTarget.position
+        };
+        return InterpolateLegPosition(leg, leg.CurrentIKTarget, nextTarget);
+    }
+
+    private IEnumerator UpdateOtherLegs2()
     {
         yield return new WaitWhile(() => _runningLegInterpolations.Count > 0);
         LegIKTargetPair pair1 = legIKsTargets[2];
@@ -209,6 +220,26 @@ public class SpiderLegsController : MonoBehaviour
             _runningLegInterpolations[pair.legIK] = InterpolateLegPosition(
                 pair.legIK, pair.legIK.CurrentIKTarget, nextTarget);
             StartCoroutine(_runningLegInterpolations[pair.legIK]);
+        }
+    }
+    
+    private IEnumerator UpdateOtherLegs()
+    {
+        yield return new WaitWhile(() => _runningLegInterpolations.Count > 0);
+
+        int legsCount = legIKsTargets.Length;
+        for (int i = 1; i < legsCount; i += 4)
+        {
+            LegIKTargetPair pair = legIKsTargets[i];
+            _runningLegInterpolations[pair.legIK] = PreparePairForInterpolation(pair);
+            StartCoroutine(_runningLegInterpolations[pair.legIK]);
+
+            if (i + 1 < legsCount)
+            {
+                pair = legIKsTargets[i+1];
+                _runningLegInterpolations[pair.legIK] = PreparePairForInterpolation(pair);
+                StartCoroutine(_runningLegInterpolations[pair.legIK]);
+            }
         }
     }
 }
